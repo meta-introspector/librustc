@@ -1,0 +1,34 @@
+# Ignore organized models directory - will be uploaded to HuggingFace
+organized_models/
+
+# Ignore binary executables
+**/target/
+temp_binary
+test_wrap
+top_transitions
+transition_matrix
+universal_dumper
+venn_markov_analyzer
+rustc_markov_analyzer
+rustc_hir_cicd
+rust_repo_generator
+regex_fixed_point
+reverse_ending
+
+# Ignore generated files
+*.csv
+rustc_hir_build_report.txt
+models/
+
+*.log
+data/
+build_logs/
+check_errors/
+lattice_test_results/
+compilation-analysis/
+mir_dump/
+security_audit/
+telemetry/
+result
+*.bin
+*.dot
