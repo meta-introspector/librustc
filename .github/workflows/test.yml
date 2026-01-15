@@ -1,0 +1,43 @@
+name: Test librustc
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install Nix
+      uses: meta-introspector/install-nix-action@v27
+      
+    - name: Build
+      run: |
+        nix develop --command cargo build --release
+        
+    - name: Test symbol loading
+      run: |
+        nix develop --command bash -c '
+          export RUSTC_DRIVER_SO=$(find $(rustc --print sysroot)/lib -name "librustc_driver-*.so")
+          echo "Found: $RUSTC_DRIVER_SO"
+          ./preload-rustc.sh cargo run --example simple
+        '
+        
+    - name: Test compilation
+      run: |
+        nix develop --command bash -c '
+          ./preload-rustc.sh cargo run --example compile -- tests/test.rs
+          ./test
+        '
+        
+    - name: Verify no rustc exec
+      run: |
+        nix develop --command bash -c '
+          strace -e trace=execve ./preload-rustc.sh cargo run --example compile -- tests/test.rs 2>&1 | tee trace.log
+          ! grep -q "execve.*rustc" trace.log || (echo "ERROR: Called rustc binary!" && exit 1)
+          echo "✅ Confirmed: No rustc exec, used .so only"
+        '
