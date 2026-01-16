@@ -11,7 +11,7 @@ pkgs.rustPlatform.buildRustPackage {
   };
 
   buildInputs = with pkgs; [
-    libloading
+    # libloading is a Rust crate, not a system dependency
   ];
 
   meta = with pkgs.lib; {
